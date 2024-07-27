@@ -123,6 +123,10 @@ class ToolsBar {
 
 }
 
+function getFontSize(elem) {
+    return window.getComputedStyle(elem).fontSize.substring(0, window.getComputedStyle(elem).fontSize.length - 2);
+}
+
 const ConfigsType = Object.freeze({ TextSize: "TextSize" });
 class ConfigBar {
     constructor() {
@@ -165,34 +169,52 @@ class ConfigBar {
                                 if (parentElem.childNodes[i] == lelem) {
                                     break;
                                 }
-                                leftSideTexts.push(parentElem.childNodes[i].textContent);
+                                leftSideTexts.push([parentElem.childNodes[i].textContent,getFontSize(parentElem.childNodes[i])]);
                             }
-                            if (lelem.textContent.substring(0,lastSelectedEvent.lbound)) { leftSideTexts.push(lelem.textContent.substring(0,lastSelectedEvent.lbound)); }
+                            if (lelem.textContent.substring(0,lastSelectedEvent.lbound)) { leftSideTexts.push([lelem.textContent.substring(0,lastSelectedEvent.lbound),getFontSize(lelem)]); }
 
 
                             // middle
-                            if (lelem.textContent.substring(lastSelectedEvent.lbound)) { middleSideTexts.push(lelem.textContent.substring(lastSelectedEvent.lbound)); }
+                            if (lelem.textContent.substring(lastSelectedEvent.lbound)) { middleSideTexts.push([lelem.textContent.substring(lastSelectedEvent.lbound),getFontSize(lelem)]); }
                             i++;
                             for (i = i; i < parentElem.childNodes.length; i++) {
                                 if (parentElem.childNodes[i] == relem) {
                                     break;
                                 }
-                                middleSideTexts.push(parentElem.childNodes[i].textContent);
+                                middleSideTexts.push([parentElem.childNodes[i].textContent,getFontSize(parentElem.childNodes[i])]);
                             }
-                            if (relem.textContent.substring(0, lastSelectedEvent.rbound)) { middleSideTexts.push(relem.textContent.substring(0, lastSelectedEvent.rbound)); }
+                            if (relem.textContent.substring(0, lastSelectedEvent.rbound)) { middleSideTexts.push([relem.textContent.substring(0, lastSelectedEvent.rbound),getFontSize(relem)]); }
 
                             // last
                             if (relem.textContent.substring(lastSelectedEvent.rbound)) {
-                                rightSideTexts.push(relem.textContent.substring(lastSelectedEvent.rbound));
+                                rightSideTexts.push([relem.textContent.substring(lastSelectedEvent.rbound),getFontSize(relem)]);
                             }
                             i++;
                             for (i = i; i < parentElem.childNodes.length; i++) {
-                                rightSideTexts.push(parentElem.childNodes[i].textContent);
+                                rightSideTexts.push([parentElem.childNodes[i].textContent,getFontSize(parentElem.childNodes[i])]);
                             }
 
-                            console.log(leftSideTexts);
-                            console.log(middleSideTexts);
-                            console.log(rightSideTexts);
+                            while (parentElem.firstChild) {
+                                parentElem.removeChild(parentElem.lastChild);
+                            }
+
+                            let maxFont = -1;
+                            let totalText = ""; 
+                            middleSideTexts.forEach((([text,size]) => {
+                                totalText += text;
+                                if(size > maxFont) {
+                                    maxFont = size;
+                                }
+                            }));
+                            for(let [text,size] of leftSideTexts) {
+                                parentElem.appendChild(parseHTML(`<span style="font-size: ${size}px">${text}</span>`))
+                            }
+                            parentElem.appendChild(parseHTML(`<span id="resizable-text" style="font-size: ${maxFont}px">${totalText}</span>`))
+                            for(let [text,size] of rightSideTexts) {
+                                parentElem.appendChild(parseHTML(`<span style="font-size: ${size}px">${text}</span>`))
+                            }
+                            fontSize = maxFont;
+
 
 
                         } else {
