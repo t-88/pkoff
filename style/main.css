@@ -1,0 +1,89 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: row;
+}
+
+#tools-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100px;
+  height: 100%;
+  background: black;
+  padding: 20px 10px;
+}
+#tools-bar .tool-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 2px;
+  background-color: red;
+  cursor: pointer;
+}
+#tools-bar .tool-btn:hover {
+  opacity: 0.95;
+}
+
+#slider-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  gap: 16px;
+}
+#slider-canvas #config-bar {
+  width: 100%;
+  height: 60px;
+  background-color: aqua;
+}
+
+#edit-slider {
+  display: block;
+  width: 90%;
+  height: 90%;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  outline: 1px solid black;
+  min-width: 1200px;
+}
+
+#add-slider-btn {
+  width: fit-content;
+  height: fit-content;
+  display: block;
+}
+#add-slider-btn .add-icon {
+  cursor: pointer;
+}
+
+.text-element {
+  background: transparent;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid black;
+  padding: 4px 0px;
+  font-size: 20px;
+  min-width: 4px;
+  text-decoration: none;
+}
+.text-element:not(:focus) {
+  border-bottom: none;
+}
+
+/*# sourceMappingURL=main.css.map */
