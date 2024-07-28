@@ -20,32 +20,34 @@ function getSelectedTextEvent() {
 
 
 let lastSelectedEvent = undefined;
-
+var mousePos = {x : 0, y : 0};
 
 class DragManager {
     constructor() {
         this.element = undefined;
         this.canvasElement = undefined;
-        
-        document.addEventListener("mousemove",(e) => {
-            e.stopPropagation();
 
-            if(this.element == undefined) return;
-            if(this.canvasElement == undefined) return;
-            if(e.which == 0) {
+        document.addEventListener("mousemove", (e) => {
+            e.stopPropagation();
+            mousePos.x = e.pageX;
+            mousePos.y = e.pageY;
+
+            if (this.element == undefined) return;
+            if (this.canvasElement == undefined) return;
+            if (e.which == 0) {
                 this.element = undefined;
                 return;
             }
-        
+
             let canvasRect = this.canvasElement.getBoundingClientRect();
-            canvasRect = {x : canvasRect.x , y : canvasRect.y , w : canvasRect.width, h : canvasRect.height};
+            canvasRect = { x: canvasRect.x, y: canvasRect.y, w: canvasRect.width, h: canvasRect.height };
             let elementRect = this.element.getBoundingClientRect();
-            elementRect = {x : elementRect.x , y : elementRect.y , w : elementRect.width, h : elementRect.height};
+            elementRect = { x: elementRect.x, y: elementRect.y, w: elementRect.width, h: elementRect.height };
 
 
             this.element.style.left = `${e.pageX - canvasRect.x - elementRect.w / 2}px`;
             this.element.style.top = `${e.pageY - canvasRect.y - elementRect.h / 2}px`;
-        });        
+        });
     }
 
     init(canvasElement) {
@@ -56,15 +58,15 @@ class DragManager {
 class TextElement {
     constructor(x, y) {
         this.value = "";
-        this.element = parseHTML(`<div contenteditable="true">0123456789ABCDEFG</div>`);
+        this.element = parseHTML(`<div contenteditable="true"><span>0123456789ABCDEFG</span></div>`);
         this.element.classList = ["text-element"];
         this.element.style.position = "absolute";
         this.element.style.top = `${y}%`;
         this.element.style.left = `${x}%`;
         this.updateCanvas = () => { };
 
-        this.element.addEventListener("mousedown",(e) => {
-            if(!this.element.classList.contains("text-element-unfoced")) return;
+        this.element.addEventListener("mousedown", (e) => {
+            if (!this.element.classList.contains("text-element-unfoced")) return;
             dragManager.element = this.element;
         });
 
@@ -105,10 +107,6 @@ class TextElement {
             } {
 
             }
-
-
-
-
         });
 
         this.element.addEventListener("focusout", () => {
@@ -128,6 +126,27 @@ class TextElement {
         configBar.setConfigsOptions(this.element, [ConfigsType.TextSize]);
     }
 }
+
+class ImageElement {
+    constructor(x,y,data) {
+        this.data = data;
+        this.element = parseHTML(`<img class="image-element" src="${data}"/>`);
+        this.element.style.position = "absolute";
+        this.element.style.left = `${x}px`;
+        this.element.style.top =  `${y}px`;
+
+        this.element.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            dragManager.element = this.element;
+        });        
+    }   
+
+    config() {
+
+    }
+}
+
+
 
 ToolType = Object.freeze({ None: "None", Text: "Text" });
 class ToolManager {
@@ -348,8 +367,8 @@ class EditSlider {
     }
 
     onClick(e) {
-        let rect = this.element.getBoundingClientRect();
-        this.rect = { x: rect.x, y: rect.y, w: rect.width, h: rect.height };
+        this.rect = this.element.getBoundingClientRect();
+        this.rect = { x: this.rect.x, y: this.rect.y, w: this.rect.width, h: this.rect.height };
 
         let x = e.offsetX;
         let y = e.offsetY;
@@ -378,6 +397,17 @@ class EditSlider {
 
         curState = CanvasState.Edit;
     }
+
+    addElement(element) {
+        this.elements.push(element);
+        this.element.appendChild(this.elements[this.elements.length - 1].element);
+    }
+
+    relativePos(x,y) {
+        this.rect = this.element.getBoundingClientRect();
+        this.rect = { x: this.rect.x, y: this.rect.y, w: this.rect.width, h: this.rect.height };
+        return {x: x - this.rect.x, y : y - this.rect.y}; 
+    }
 }
 
 function toolBtnSelectText() {
@@ -385,11 +415,37 @@ function toolBtnSelectText() {
 }
 
 
+class ImgPaste {
+    constructor() {
+        document.addEventListener("paste", (e) => this.onPaste(e));
+    }
+    onPaste(e) {
+        const clipboardData = e.clipboardData || window.clipboardData;
+        for (let file of clipboardData.files) {
+            // console.log(file);
+            if(file.type != "image/png") return;
+
+            var fileReader = new FileReader();
+            fileReader.addEventListener('load', () => this.onReadImgData(fileReader));
+            fileReader.readAsDataURL(file);
+        }
+    }
+    onReadImgData(fr) {
+        let data =  fr.result;
+        let pos = editSlider.relativePos(mousePos.x,mousePos.y);
+        editSlider.addElement(new ImageElement(pos.x,pos.y,data));
+    }
+
+}
+
 function init() {
     addSliderBtn.init();
     editSlider.init();
     configBar.init();
     dragManager.init(editSlider.element);
+    
+
+
 }
 
 
@@ -399,6 +455,7 @@ let curState = CanvasState.New;
 
 let toolManager = new ToolManager();
 let dragManager = new DragManager();
+let imgPaste = new ImgPaste();
 
 
 let toolsBar = new ToolsBar();

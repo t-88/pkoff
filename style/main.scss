@@ -62,7 +62,7 @@ body {
     display: block;
     width: 90%;
     height: 90%;
-    border-radius: 4px;
+    border-radius: 1px;
     position: relative;
     overflow: hidden;
     outline: 1px solid black  ;
@@ -84,15 +84,18 @@ body {
 .text-element {
     background: transparent;
     border: none;
-    outline: none;
-    border-bottom: 1px solid black;
-    padding: 4px 0px;
+    outline: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 1px;
     font-size: 20px;
     min-width: 4px;
     text-decoration: none;
+    overflow-wrap: break-word;
+    max-width: 300px;
 
     &:not(:focus) {
-        border-bottom: none;
+        outline: none;
+
     }
 }
 .text-element-unfoced {
@@ -103,4 +106,9 @@ body {
     user-select: none; /* Standard syntax */
 
     
+}
+
+.image-element {
+    outline: 1px solid black;
+    cursor: pointer;
 }
