@@ -300,7 +300,7 @@ class TextElement {
 
     config() {
         configElements[ConfigsType.TextResize].config(this.element, getFontSize(this.element), (e) => this.onSelectionResize(e));
-        configElements[ConfigsType.WidthResize].config(this.element, parseInt(this.element.getBoundingClientRect().width), (e) => this.onWidthResize(e), false);
+        configElements[ConfigsType.WidthResize].config(this.element, parseInt(this.element.getBoundingClientRect().width), (e) => this.onWidthResize(e));
         configBar.setConfigList([ConfigsType.TextResize, ConfigsType.WidthResize]);
     }
 }
