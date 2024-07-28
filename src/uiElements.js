@@ -125,11 +125,10 @@ class Canvas {
         }, { once: true });
 
 
-
+        $.onUpdateCanvas();
     }
 
     relativePos(x, y) {
-        console.log(this);
         this.rect = this.element.getBoundingClientRect();
         this.rect = { x: this.rect.x, y: this.rect.y, w: this.rect.width, h: this.rect.height };
         return { x: x - this.rect.x, y: y - this.rect.y };

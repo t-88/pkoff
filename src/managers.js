@@ -10,6 +10,7 @@ class DragManager {
             if (this.element == undefined) return;
             if (this.canvasElement == undefined) return;
             if (e.which == 0) {
+            $.onUpdateCanvas();
                 this.element = undefined;
                 return;
             }
@@ -23,6 +24,7 @@ class DragManager {
             this.element.style.left = `${e.pageX - canvasRect.x - elementRect.w / 2}px`;
             this.element.style.top = `${e.pageY - canvasRect.y - elementRect.h / 2}px`;
         });
+
     }
 
     init(canvasElement) {

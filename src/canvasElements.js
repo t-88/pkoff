@@ -4,7 +4,7 @@ class TextElement {
         this.element = parseHTML(`<div  class="text-element" 
                                         contenteditable="true"
                                         style="position: absolute;top: ${y}%;left: ${x}%;">
-                                        <span>_</span>
+                                        <span>_#####################</span>
                                   </div>`);
 
 
@@ -60,6 +60,7 @@ class TextElement {
         this.element.setAttribute("contenteditable", false);
         this.element.classList.remove("text-element-unfoced");
         this.element.classList.add("text-element-unfoced");
+        $.onUpdateCanvas();
     }
     onDoubleClick(e) {
         this.element.setAttribute("contenteditable", true);
@@ -190,14 +191,18 @@ class TextElement {
             }
         }
         document.getElementById("resizable-text").style.fontSize = e.target.value + "px";
+
+        $.onUpdateCanvas();
     }
     onWidthResize(e) {
         this.element.style.width = `${parseInt(e.target.value)}px`;
+        $.onUpdateCanvas();
     }
     config() {
         $.configOptions[ConfigsType.TextResize].config(this.element, getFontSize(this.element), (e) => this.onSelectionResize(e));
         $.configOptions[ConfigsType.WidthResize].config(this.element, parseInt(this.element.getBoundingClientRect().width), (e) => this.onWidthResize(e));
         $.configBar.setConfigList([ConfigsType.TextResize, ConfigsType.WidthResize]);
+        $.onUpdateCanvas();
     }
 }
 
@@ -232,11 +237,14 @@ class ImageElement {
         this.inputWidth = `${parseInt(e.target.value)}px`;
         if (!this.widthResizeEnabled) return;
         this.element.style.width = `${parseInt(e.target.value)}px`;
+        $.onUpdateCanvas();
     }
     onHeightResize(e) {
         this.inputHeight = `${parseInt(e.target.value)}px`;
         if (!this.heightResizeEnabled) return;
         this.element.style.height = `${parseInt(e.target.value)}px`;
+        $.onUpdateCanvas();
+
     }
     disableWidthResize(e) {
         this.widthResizeEnabled = e.target.checked;
@@ -270,6 +278,7 @@ class ImageElement {
         $.configOptions[ConfigsType.WidthResize].config(this.element, this.inputWidth, (e) => this.onWidthResize(e), false, true, (e) => this.disableWidthResize(e));
         $.configOptions[ConfigsType.HeightResize].config(this.element, this.inputHeight, (e) => this.onHeightResize(e), false, false, (e) => this.disableHeightResize(e));
         $.configBar.setConfigList([ConfigsType.WidthResize, ConfigsType.HeightResize]);
+        $.onUpdateCanvas();
     }
 }
 

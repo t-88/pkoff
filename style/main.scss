@@ -1,5 +1,6 @@
 $border-color: #dbe2ea;
 $background-color: whitesmoke;
+$accent-color: #3f59f6;
 
 * {
     margin: 0;
@@ -157,9 +158,8 @@ body {
     min-width: 1200px;
 
     background-color: white;
-
-
 }
+
 
 #add-slider-btn {
     width: fit-content;
@@ -228,4 +228,7 @@ body {
         border-radius: 2px;
         cursor: pointer;
     }
+}
+.selected-tab {
+    border: 1px solid $accent-color !important;
 }

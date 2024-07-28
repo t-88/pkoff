@@ -188,4 +188,8 @@ body {
   cursor: pointer;
 }
 
+.selected-tab {
+  border: 1px solid #3f59f6 !important;
+}
+
 /*# sourceMappingURL=main.css.map */

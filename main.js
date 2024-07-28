@@ -23,10 +23,11 @@ class AppState {
         // ui
         this.canvasContainerElem = undefined;
         this.tabsElem = undefined; 
+        this.selectedTabElem = undefined;
 
         this.toolsBar = new ToolsBar();
         this.configBar = new ConfigBar();
-        this.canvasList = [new Canvas()];
+        this.canvasList = [];
         this.canvas = this.canvasList[0];
         this.configOptions = {
             TextResize : new InputArea(IconPath.TextResize),
@@ -42,15 +43,12 @@ class AppState {
         document.addEventListener("mousemove",(e) => this.onMouseMove(e));
     }
     onLoad() {
-        this.canvas.init();
         this.configBar.init();
-        this.dragManager.init(this.canvas.element);
-        this.curTab = document.getElementById("tabs").querySelectorAll(".tab")[0];
+        this.dragManager.init();
         
         this.canvasContainerElem = document.getElementById("canvas-container");
         this.tabsElem = document.getElementById("tabs-container");
-        
-        this.setCanvas(this.canvas);
+        this.addCanvas();
     }
     onMouseMove(e) {
         this.mousePos.x =  e.pageX;
@@ -59,8 +57,14 @@ class AppState {
 
     setCanvas(canvas) {
         this.canvas = canvas;
+        this.dragManager.canvasElement = canvas.element;
         clearElemNodes(this.canvasContainerElem);
         this.canvasContainerElem.appendChild(this.canvas.element);
+    }
+
+    async onUpdateCanvas() {
+        let data = (await html2canvas(this.canvas.element)).toDataURL();
+        this.selectedTabElem.setAttribute("src",data);
     }
 
     addCanvas() {
@@ -69,7 +73,18 @@ class AppState {
         this.canvasList.push(canvas);
 
         const elem = parseHTML(`<img class="tab"/>`);
-        elem.addEventListener("click",() => this.setCanvas(canvas));
+        if(this.selectedTabElem == undefined) {
+            this.selectedTabElem = elem;
+            this.selectedTabElem.classList.add("selected-tab");
+            this.setCanvas(canvas)
+        }
+        elem.addEventListener("click",() => {
+            if(this.selectedTabElem) { this.selectedTabElem.classList.remove("selected-tab"); }
+            this.selectedTabElem = elem;
+            this.selectedTabElem.classList.add("selected-tab");
+
+            this.setCanvas(canvas)
+        });
         this.tabsElem.appendChild(elem);
     }
 
