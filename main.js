@@ -24,7 +24,7 @@ let lastSelectedEvent = undefined;
 class TextElement {
     constructor(x, y) {
         this.value = "";
-        this.element = parseHTML(`<div contenteditable="true">0123456789</div>`);
+        this.element = parseHTML(`<div contenteditable="true">0123456789ABCDEFG</div>`);
         this.element.classList = ["text-element"];
         this.element.style.position = "absolute";
         this.element.style.top = `${y}%`;
@@ -42,7 +42,16 @@ class TextElement {
 
             let [text, event] = getSelectedTextEvent();
             lastSelectedText = this;
-            if (event.baseNode.parentNode.getBoundingClientRect().x <= event.extentNode.parentNode.getBoundingClientRect().x) {
+
+            if (this.element.childNodes.length == 1) {
+                lastSelectedEvent = {
+                    lelem: event.baseNode.parentNode,
+                    relem: event.extentNode.parentNode,
+                    lbound: Math.min(event.baseOffset, event.extentOffset),
+                    rbound: Math.max(event.baseOffset, event.extentOffset),
+                    text: event.toString(),
+                };
+            } else if (event.baseNode.parentNode.getBoundingClientRect().x <= event.extentNode.parentNode.getBoundingClientRect().x) {
                 lastSelectedEvent = {
                     lelem: event.baseNode.parentNode,
                     relem: event.extentNode.parentNode,
@@ -59,10 +68,10 @@ class TextElement {
                     text: event.toString(),
                 };
 
+            } {
+
             }
-            console.log(lastSelectedEvent);
-            // console.log(event);
-            // console.log(lastSelectedEvent);
+
 
 
 
@@ -146,14 +155,23 @@ class ConfigBar {
         this.activeConfigs[configType] = this.configs[configType];
         switch (configType) {
             case ConfigsType.TextSize:
-                let fontSize = window.getComputedStyle(this.activeElement).fontSize.substring(0, window.getComputedStyle(this.activeElement).fontSize.length - 2);
                 let inputElement = this.activeConfigs[ConfigsType.TextSize].getElementsByTagName("input")[0];
+                let fontSize = window.getComputedStyle(this.activeElement).fontSize.substring(0, window.getComputedStyle(this.activeElement).fontSize.length - 2);
+                inputElement.defaultValue = fontSize;
+
                 inputElement.addEventListener("change", (e) => {
+                    let fontSize = window.getComputedStyle(this.activeElement).fontSize.substring(0, window.getComputedStyle(this.activeElement).fontSize.length - 2);
                     if (lastSelectedEvent == undefined) {
                         this.activeElement.style.fontSize = e.target.value + "px";
                     } else {
                         let lelem = lastSelectedEvent.lelem;
                         let relem = lastSelectedEvent.relem;
+                        let lbound = lastSelectedEvent.lbound;
+                        let rbound = lastSelectedEvent.rbound;
+                        if (lelem == relem) {
+                            lbound = Math.min(lastSelectedEvent.lbound, lastSelectedEvent.rbound);
+                            rbound = Math.max(lastSelectedEvent.lbound, lastSelectedEvent.rbound);
+                        }
                         let selectedText = lastSelectedEvent.text;
                         if (lelem.parentElement != undefined && lelem.parentElement.classList.contains("text-element")) {
                             let parentElem = lelem.parentElement;
@@ -164,34 +182,52 @@ class ConfigBar {
                             let middleSideTexts = [];
                             let rightSideTexts = [];
 
-                            // first
+                            // left
                             for (i = 0; i < parentElem.childNodes.length; i++) {
                                 if (parentElem.childNodes[i] == lelem) {
                                     break;
                                 }
-                                leftSideTexts.push([parentElem.childNodes[i].textContent,getFontSize(parentElem.childNodes[i])]);
+                                if (parentElem.childNodes[i].textContent) {
+                                    leftSideTexts.push([parentElem.childNodes[i].textContent, getFontSize(parentElem.childNodes[i])]);
+                                }
                             }
-                            if (lelem.textContent.substring(0,lastSelectedEvent.lbound)) { leftSideTexts.push([lelem.textContent.substring(0,lastSelectedEvent.lbound),getFontSize(lelem)]); }
-
+                            if (lelem.textContent.substring(0, lbound)) {
+                                leftSideTexts.push([lelem.textContent.substring(0, lbound), getFontSize(lelem)]);
+                            }
 
                             // middle
-                            if (lelem.textContent.substring(lastSelectedEvent.lbound)) { middleSideTexts.push([lelem.textContent.substring(lastSelectedEvent.lbound),getFontSize(lelem)]); }
-                            i++;
-                            for (i = i; i < parentElem.childNodes.length; i++) {
-                                if (parentElem.childNodes[i] == relem) {
-                                    break;
+                            if (lelem != relem) {
+                                if (lelem.textContent.substring(lbound)) { middleSideTexts.push([lelem.textContent.substring(lbound), getFontSize(lelem)]); }
+                                i++;
+                                for (i = i; i < parentElem.childNodes.length; i++) {
+                                    if (parentElem.childNodes[i] == relem) {
+                                        break;
+                                    }
+                                    if (parentElem.childNodes[i].textContent) {
+                                        middleSideTexts.push([parentElem.childNodes[i].textContent, getFontSize(parentElem.childNodes[i])]);
+                                    }
                                 }
-                                middleSideTexts.push([parentElem.childNodes[i].textContent,getFontSize(parentElem.childNodes[i])]);
-                            }
-                            if (relem.textContent.substring(0, lastSelectedEvent.rbound)) { middleSideTexts.push([relem.textContent.substring(0, lastSelectedEvent.rbound),getFontSize(relem)]); }
+                                if (relem.textContent.substring(0, rbound)) { middleSideTexts.push([relem.textContent.substring(0, rbound), getFontSize(relem)]); }
+                                i++;
 
-                            // last
-                            if (relem.textContent.substring(lastSelectedEvent.rbound)) {
-                                rightSideTexts.push([relem.textContent.substring(lastSelectedEvent.rbound),getFontSize(relem)]);
+
+
+                            } else {
+                                if (selectedText) {
+                                    middleSideTexts.push([selectedText, getFontSize(relem)]);
+                                }
+                                i++;
                             }
-                            i++;
+                            // right
+                            if (relem.textContent.substring(rbound)) {
+                                rightSideTexts.push([relem.textContent.substring(rbound), getFontSize(relem)]);
+                            }
+
+
                             for (i = i; i < parentElem.childNodes.length; i++) {
-                                rightSideTexts.push([parentElem.childNodes[i].textContent,getFontSize(parentElem.childNodes[i])]);
+                                if (parentElem.childNodes[i].textContent) {
+                                    rightSideTexts.push([parentElem.childNodes[i].textContent, getFontSize(parentElem.childNodes[i])]);
+                                }
                             }
 
                             while (parentElem.firstChild) {
@@ -199,18 +235,16 @@ class ConfigBar {
                             }
 
                             let maxFont = -1;
-                            let totalText = ""; 
-                            middleSideTexts.forEach((([text,size]) => {
-                                totalText += text;
-                                if(size > maxFont) {
+                            middleSideTexts.forEach((([text, size]) => {
+                                if (size > maxFont) {
                                     maxFont = size;
                                 }
                             }));
-                            for(let [text,size] of leftSideTexts) {
+                            for (let [text, size] of leftSideTexts) {
                                 parentElem.appendChild(parseHTML(`<span style="font-size: ${size}px">${text}</span>`))
                             }
-                            parentElem.appendChild(parseHTML(`<span id="resizable-text" style="font-size: ${maxFont}px">${totalText}</span>`))
-                            for(let [text,size] of rightSideTexts) {
+                            parentElem.appendChild(parseHTML(`<span id="resizable-text" style="font-size: ${maxFont}px">${selectedText}</span>`))
+                            for (let [text, size] of rightSideTexts) {
                                 parentElem.appendChild(parseHTML(`<span style="font-size: ${size}px">${text}</span>`))
                             }
                             fontSize = maxFont;
@@ -222,17 +256,22 @@ class ConfigBar {
                             while (lelem.firstChild) {
                                 lelem.removeChild(lelem.lastChild);
                             }
-
-                            lelem.appendChild(parseHTML(`<span>${text.substring(0, lastSelectedEvent.lbound)}</span>`))
-                            lelem.appendChild(parseHTML(`<span id="resizable-text">${selectedText}</span>`))
-                            lelem.appendChild(parseHTML(`<span>${text.substring(lastSelectedEvent.lbound + selectedText.length)}</span>`))
+                            if (text.substring(0, lastSelectedEvent.lbound)) {
+                                lelem.appendChild(parseHTML(`<span>${text.substring(0, lastSelectedEvent.lbound)}</span>`))
+                            }
+                            if (selectedText) {
+                                lelem.appendChild(parseHTML(`<span id="resizable-text">${selectedText}</span>`))
+                            }
+                            if (text.substring(lastSelectedEvent.lbound + selectedText.length)) {
+                                lelem.appendChild(parseHTML(`<span>${text.substring(lastSelectedEvent.lbound + selectedText.length)}</span>`))
+                            }
                         }
                         document.getElementById("resizable-text").style.fontSize = e.target.value + "px";
 
                     }
+                    inputElement.defaultValue = fontSize;
                 });
 
-                inputElement.value = fontSize;
 
 
                 break;
