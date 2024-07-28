@@ -9,29 +9,29 @@
 
 <body>
     <section id="tools-bar">
-        <div id="logo">
-            <h2 >P</h2>
-            koff
-        </div>
+        <div id="logo"><h2 >P</h2>koff</div>
         <section class="tools"> 
-            <img class="tool-btn" src="assets/text.png" alt="text.png" onclick="toolBtnSelectText()">
+            <img class="tool-btn" src="assets/text.png" alt="text.png" onclick="$.toolManager.setTool(ToolType.Text)">
         </section>
+
     </section>
     <section id="slider-canvas">
         <div id="config-bar"></div>
-
-        <div id="add-slider-btn">
-            <img class="add-icon" width="100" src="assets/plus.png" alt="plus sign">
+        <div id="canvas-container">
         </div>
-        <div id="edit-slider"> </div>
         <div id="tabs">
-            <img class="tab"></img>
-            <div class="tab add-tab">
-                <img src="assets/plus.png"  alt="">
-            </div>
+            <section id="tabs-container">
+
+            </section>
+            <div class="tab add-tab" onclick="$.addCanvas()"> <img src="assets/plus.png"  alt="" ></div>
         </div>
     </section>
 </body>
 <script src="libs/html2canvas.min.js"></script>
+<script src="src/globals.js"></script>
+<script src="src/utils.js"></script>
+<script src="src/managers.js"></script>
+<script src="src/uiElements.js"></script>
+<script src="src/canvasElements.js"></script>
 <script src="main.js"></script>
 </html>
