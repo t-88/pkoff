@@ -85,6 +85,7 @@ body {
     align-items: center;
     position: relative;
     gap: 16px;
+    justify-content:space-between;
 
     background-color: $background-color;
 
@@ -100,6 +101,36 @@ body {
         background-color: white;
         border-bottom: 1px solid $border-color;
     }
+    
+    #tabs {
+        width: 100%;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        padding: 20px 32px;
+        border-top: 1px solid $border-color;
+        background-color: white;
+    
+        .tab {
+            width:  80px;
+            height: 60px;
+            border-radius: 2px;
+            border: 1px solid $border-color;
+            cursor: pointer;
+        }
+
+        .add-tab { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img {
+                width: 20px;
+                opacity: 0.4;
+            }
+        }
+
+    }
 
 }
 
@@ -107,8 +138,8 @@ body {
 
 #edit-slider {
     display: block;
-    width: 90%;
-    height: 90%;
+    width: calc(800px  * 1.2);
+    height: calc(600px * 1.2);
     border-radius: 2px;
     position: relative;
     overflow: hidden;
@@ -188,3 +219,5 @@ body {
         cursor: pointer;
     }
 }
+
+

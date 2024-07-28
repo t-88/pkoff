@@ -37,6 +37,8 @@ let ToolType = Object.freeze({ None: "None", Text: "Text" });
 let lastSelectedEvent = undefined;
 let mousePos = { x: 0, y: 0 };
 
+let curTab = undefined;
+
 
 class InputArea {
     constructor(icon) {
@@ -64,7 +66,7 @@ class InputArea {
         this.setDefualtValue(defaultVal)
         this.onChange = onChangeCallback;
 
-        if(checkboxDefaultVal) { this.element.getElementsByTagName("input")[1].setAttribute("checked",checkboxDefaultVal); }
+        if (checkboxDefaultVal) { this.element.getElementsByTagName("input")[1].setAttribute("checked", checkboxDefaultVal); }
         this.element.getElementsByTagName("input")[1].style.display = disableCheckbox ? "none" : "";
         this.onToggleCheckbox = onToggleCheckbox;
     }
@@ -358,18 +360,18 @@ class ImageElement {
     config() {
         this.inputWidth = parseInt(this.element.getBoundingClientRect().width);
         this.inputHeight = parseInt(this.element.getBoundingClientRect().height);
-        if(this.heightResizeEnabled) { 
+        if (this.heightResizeEnabled) {
             this.element.style.height = `${parseInt(this.inputHeight)}px`;
         }
-        if(this.widthResizeEnabled) {
+        if (this.widthResizeEnabled) {
             this.element.style.width = `${parseInt(this.inputWidth)}px`;
         }
 
 
 
 
-        configElements[ConfigsType.WidthResize].config(this.element, this.inputWidth , (e) => this.onWidthResize(e), false  , true , (e) => this.disableWidthResize(e));
-        configElements[ConfigsType.HeightResize].config(this.element, this.inputHeight, (e) => this.onHeightResize(e), false, false , (e) => this.disableHeightResize(e));
+        configElements[ConfigsType.WidthResize].config(this.element, this.inputWidth, (e) => this.onWidthResize(e), false, true, (e) => this.disableWidthResize(e));
+        configElements[ConfigsType.HeightResize].config(this.element, this.inputHeight, (e) => this.onHeightResize(e), false, false, (e) => this.disableHeightResize(e));
         configBar.setConfigList([ConfigsType.WidthResize, ConfigsType.HeightResize]);
 
     }
@@ -433,17 +435,6 @@ class ConfigBar {
                 break;
         }
     }
-    setConfigList(element, configsTypes) {
-        this.activeElement = element;
-        this.activeConfigs = {};
-        for (let configsType of configsTypes) {
-            this.initConfigType(configsType);
-        }
-
-        for (let type of Object.keys(this.activeConfigs)) {
-            this.element.appendChild(this.activeConfigs[type]);
-        }
-    }
 
     setConfigList(configList) {
         while (this.element.firstChild) {
@@ -492,17 +483,14 @@ class EditSlider {
         switch (toolManager.curTool) {
             case ToolType.None: break;
             case ToolType.Text:
-                this.elements.push(new TextElement(x / this.rect.w * 100, (y - 10) / this.rect.h * 100));
-                this.element.appendChild(this.elements[this.elements.length - 1].element);
-                this.elements[this.elements.length - 1].element.focus();
-                this.elements[this.elements.length - 1].config();
-                this.elements[this.elements.length - 1].idx = this.elements.length - 1;
-                this.elements[this.elements.length - 1].updateCanvas = (elem) => {
-                    this.element.replaceChild(elem.element, this.element.children[elem.idx]);
-                }
-                toolManager.setTool(ToolType.None);
+                this.addElement(new TextElement(x / this.rect.w * 100, (y - 10) / this.rect.h * 100), () => {
+                    this.elements[this.elements.length - 1].element.focus();
+
+                })
                 break;
         }
+        toolManager.setTool(ToolType.None);
+
 
     }
 
@@ -514,10 +502,22 @@ class EditSlider {
         curState = CanvasState.Edit;
     }
 
-    addElement(element) {
+    addElement(element, callback = () => { }) {
         this.elements.push(element);
         this.element.appendChild(this.elements[this.elements.length - 1].element);
-        element.element.addEventListener("load",() => {element.config()}, {once: true});
+        element.element.addEventListener("load", () => {
+            element.config()
+            callback();
+        }, { once: true });
+
+
+
+        this.canvasChanged();
+    }
+
+    async canvasChanged()  {
+        let data =  (await html2canvas(this.element)).toDataURL();
+        curTab.setAttribute("src",data);
     }
 
     relativePos(x, y) {
@@ -564,6 +564,8 @@ function init() {
     configElements[ConfigsType.WidthResize] = new InputArea(IconPath.WidthResize);
     configElements[ConfigsType.HeightResize] = new InputArea(IconPath.HeightResize);
 
+
+    curTab = document.getElementById("tabs").querySelectorAll(".tab")[0];
 
 }
 
