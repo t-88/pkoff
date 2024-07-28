@@ -4,7 +4,6 @@ function parseHTML(html) {
     element.innerHTML = html;
     return element.firstChild;
 }
-
 function getSelectedTextEvent() {
     let event = undefined;
     let text = "";
@@ -18,8 +17,41 @@ function getSelectedTextEvent() {
     return [text, event];
 }
 
-let lastSelectedText = undefined;
+
+
 let lastSelectedEvent = undefined;
+
+
+class DragManager {
+    constructor() {
+        this.element = undefined;
+        this.canvasElement = undefined;
+        
+        document.addEventListener("mousemove",(e) => {
+            e.stopPropagation();
+
+            if(this.element == undefined) return;
+            if(this.canvasElement == undefined) return;
+            if(e.which == 0) {
+                this.element = undefined;
+                return;
+            }
+        
+            let canvasRect = this.canvasElement.getBoundingClientRect();
+            canvasRect = {x : canvasRect.x , y : canvasRect.y , w : canvasRect.width, h : canvasRect.height};
+            let elementRect = this.element.getBoundingClientRect();
+            elementRect = {x : elementRect.x , y : elementRect.y , w : elementRect.width, h : elementRect.height};
+
+
+            this.element.style.left = `${e.pageX - canvasRect.x - elementRect.w / 2}px`;
+            this.element.style.top = `${e.pageY - canvasRect.y - elementRect.h / 2}px`;
+        });        
+    }
+
+    init(canvasElement) {
+        this.canvasElement = canvasElement;
+    }
+}
 
 class TextElement {
     constructor(x, y) {
@@ -31,17 +63,19 @@ class TextElement {
         this.element.style.left = `${x}%`;
         this.updateCanvas = () => { };
 
+        this.element.addEventListener("mousedown",(e) => {
+            if(!this.element.classList.contains("text-element-unfoced")) return;
+            dragManager.element = this.element;
+        });
 
         this.element.addEventListener("mouseup", (e) => {
-            // e.stopPropagation();
+            e.stopPropagation();
             if (getSelectedTextEvent()[0].length == 0) {
-                lastSelectedText = undefined;
                 lastSelectedEvent = undefined;
                 return;
             }
 
-            let [text, event] = getSelectedTextEvent();
-            lastSelectedText = this;
+            let [_, event] = getSelectedTextEvent();
 
             if (this.element.childNodes.length == 1) {
                 lastSelectedEvent = {
@@ -76,24 +110,20 @@ class TextElement {
 
 
         });
+
         this.element.addEventListener("focusout", () => {
             this.element.setAttribute("contenteditable", false);
+            this.element.classList.remove("text-element-unfoced");
+            this.element.classList.add("text-element-unfoced");
         });
         this.element.addEventListener("dblclick", () => {
             this.element.setAttribute("contenteditable", true);
+            this.element.classList.remove("text-element-unfoced");
+
             this.element.focus();
         });
 
     }
-
-    inputArea() {
-        return `<span contenteditable="true">${this.value}</span>`;
-    }
-    textArea() {
-        return `<span>${this.value}</span>`;
-    }
-
-
     config() {
         configBar.setConfigsOptions(this.element, [ConfigsType.TextSize]);
     }
@@ -359,6 +389,7 @@ function init() {
     addSliderBtn.init();
     editSlider.init();
     configBar.init();
+    dragManager.init(editSlider.element);
 }
 
 
@@ -367,6 +398,7 @@ let curState = CanvasState.New;
 
 
 let toolManager = new ToolManager();
+let dragManager = new DragManager();
 
 
 let toolsBar = new ToolsBar();
