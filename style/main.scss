@@ -1,3 +1,6 @@
+$border-color: #dbe2ea;
+$background-color: whitesmoke;
+
 * {
     margin: 0;
     padding: 0;
@@ -9,6 +12,7 @@ html,
 body {
     width: 100%;
     height: 100%;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 body {
@@ -19,22 +23,56 @@ body {
 #tools-bar {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 16px;
+    gap: 64px;
     width: 100px;
     height: 100%;
-    background: black;
     padding: 20px 10px;
 
-    .tool-btn {
-        width: 50px;
-        height: 50px;
-        border-radius: 2px;
-        background-color: red;
-        cursor: pointer;
-        &:hover {
-            opacity: 0.95;
+    background-color: white;
+    border-right: 1px solid $border-color;
+
+    .tools {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+
+
+
+        p {
+            align-self: flex-start;
+            font-weight: bold;
         }
+
+        .tool-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 2px;
+            cursor: pointer;
+
+
+            &:hover {
+                filter: invert(26%) sepia(99%) saturate(3213%) hue-rotate(229deg) brightness(101%) contrast(93%);
+            }
+        }
+    }
+
+
+
+    #logo {
+        @keyframes LogoRotation {
+            0% {
+                transform: rotate3d(4, 6, 2, 360deg);
+            }
+        }
+
+        font-size: 24px;
+        animation: LogoRotation forwards 5s infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-self: center;
+        border-bottom: 2px solid $border-color;
     }
 }
 
@@ -48,10 +86,19 @@ body {
     position: relative;
     gap: 16px;
 
+    background-color: $background-color;
+
+
     #config-bar {
         width: 100%;
         height: 60px;
-        background-color: aqua
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        padding: 20px 32px;
+
+        background-color: white;
+        border-bottom: 1px solid $border-color;
     }
 
 }
@@ -62,11 +109,14 @@ body {
     display: block;
     width: 90%;
     height: 90%;
-    border-radius: 1px;
+    border-radius: 2px;
     position: relative;
     overflow: hidden;
-    outline: 1px solid black  ;
+    outline: 1px solid $border-color ;
     min-width: 1200px;
+
+    background-color: white;
+
 
 }
 
@@ -84,31 +134,57 @@ body {
 .text-element {
     background: transparent;
     border: none;
-    outline: 1px solid rgba(0, 0, 0, 0.2);
+    outline: 1px solid $border-color;
     padding: 10px;
     border-radius: 1px;
     font-size: 20px;
     min-width: 4px;
     text-decoration: none;
     overflow-wrap: break-word;
-    max-width: 300px;
+    width: 200px;
 
     &:not(:focus) {
         outline: none;
-
     }
 }
+
 .text-element-unfoced {
     cursor: pointer;
 
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
 
-    
+
+    &:hover {
+        outline: 1px solid $border-color;
+
+    }
 }
 
 .image-element {
-    outline: 1px solid black;
+    outline: 1px solid $border-color;
     cursor: pointer;
+}
+
+.input-area-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    img {
+        width: 32px;
+    }
+
+    .number-input {
+        width: 54px;
+        padding: 6px;
+        outline: none;
+        border: 1px solid $border-color;
+        border-radius: 2px;
+        cursor: pointer;
+    }
 }

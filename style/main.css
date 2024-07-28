@@ -8,6 +8,7 @@ html,
 body {
   width: 100%;
   height: 100%;
+  font-family: "Courier New", Courier, monospace;
 }
 
 body {
@@ -18,22 +19,45 @@ body {
 #tools-bar {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  gap: 64px;
   width: 100px;
   height: 100%;
-  background: black;
   padding: 20px 10px;
+  background-color: white;
+  border-right: 1px solid #dbe2ea;
 }
-#tools-bar .tool-btn {
-  width: 50px;
-  height: 50px;
+#tools-bar .tools {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+#tools-bar .tools p {
+  align-self: flex-start;
+  font-weight: bold;
+}
+#tools-bar .tools .tool-btn {
+  width: 40px;
+  height: 40px;
   border-radius: 2px;
-  background-color: red;
   cursor: pointer;
 }
-#tools-bar .tool-btn:hover {
-  opacity: 0.95;
+#tools-bar .tools .tool-btn:hover {
+  filter: invert(26%) sepia(99%) saturate(3213%) hue-rotate(229deg) brightness(101%) contrast(93%);
+}
+#tools-bar #logo {
+  font-size: 24px;
+  animation: LogoRotation forwards 5s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  border-bottom: 2px solid #dbe2ea;
+}
+@keyframes LogoRotation {
+  0% {
+    transform: rotate3d(4, 6, 2, 360deg);
+  }
 }
 
 #slider-canvas {
@@ -45,22 +69,29 @@ body {
   align-items: center;
   position: relative;
   gap: 16px;
+  background-color: whitesmoke;
 }
 #slider-canvas #config-bar {
   width: 100%;
   height: 60px;
-  background-color: aqua;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 20px 32px;
+  background-color: white;
+  border-bottom: 1px solid #dbe2ea;
 }
 
 #edit-slider {
   display: block;
   width: 90%;
   height: 90%;
-  border-radius: 1px;
+  border-radius: 2px;
   position: relative;
   overflow: hidden;
-  outline: 1px solid black;
+  outline: 1px solid #dbe2ea;
   min-width: 1200px;
+  background-color: white;
 }
 
 #add-slider-btn {
@@ -75,14 +106,14 @@ body {
 .text-element {
   background: transparent;
   border: none;
-  outline: 1px solid rgba(0, 0, 0, 0.2);
+  outline: 1px solid #dbe2ea;
   padding: 10px;
   border-radius: 1px;
   font-size: 20px;
   min-width: 4px;
   text-decoration: none;
   overflow-wrap: break-word;
-  max-width: 300px;
+  width: 200px;
 }
 .text-element:not(:focus) {
   outline: none;
@@ -90,13 +121,36 @@ body {
 
 .text-element-unfoced {
   cursor: pointer;
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+}
+.text-element-unfoced:hover {
+  outline: 1px solid #dbe2ea;
 }
 
 .image-element {
-  outline: 1px solid black;
+  outline: 1px solid #dbe2ea;
+  cursor: pointer;
+}
+
+.input-area-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.input-area-box img {
+  width: 32px;
+}
+.input-area-box .number-input {
+  width: 54px;
+  padding: 6px;
+  outline: none;
+  border: 1px solid #dbe2ea;
+  border-radius: 2px;
   cursor: pointer;
 }
 
