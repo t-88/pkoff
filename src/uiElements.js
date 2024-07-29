@@ -119,10 +119,10 @@ class Canvas {
     addElement(element, callback = () => { }) {
         this.elements.push(element);
         this.element.appendChild(this.elements[this.elements.length - 1].element);
-        element.element.addEventListener("load", () => {
-            element.config();
-            callback();
-        }, { once: true });
+        if(element.element)
+        element.config();
+        callback();
+
 
 
         $.onUpdateCanvas();
@@ -133,4 +133,11 @@ class Canvas {
         this.rect = { x: this.rect.x, y: this.rect.y, w: this.rect.width, h: this.rect.height };
         return { x: x - this.rect.x, y: y - this.rect.y };
     }
+
+    getRect() { 
+        this.rect = this.element.getBoundingClientRect();
+        this.rect = { x: this.rect.x, y: this.rect.y, w: this.rect.width, h: this.rect.height };
+        return  { x: this.rect.x, y: this.rect.y, w: this.rect.w, h: this.rect.h };
+    }
+
 }

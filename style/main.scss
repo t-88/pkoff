@@ -10,7 +10,7 @@ $accent-color: #3f59f6;
 }
 
 html,
-body {
+body{
     width: 100%;
     height: 100%;
     font-family: 'Courier New', Courier, monospace;
@@ -18,7 +18,18 @@ body {
 
 body {
     display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.area {
+    display: flex;
     flex-direction: row;
+}
+#edit-area {
+    width: 100%;
+    height: 100%;
 }
 
 #tools-bar {
@@ -89,11 +100,11 @@ body {
     justify-content: space-between;
 
     background-color: $background-color;
-
+    overflow: hidden;
 
     #config-bar {
-        width: 100%;
         height: 60px;
+        flex: 1;
         display: flex;
         align-items: center;
         gap: 32px;
@@ -144,18 +155,23 @@ body {
     }
 
 }
-
+#canvas-container {
+    aspect-ratio: 4 / 3;
+    height: 100%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 
 .canvas {
     display: block;
-    width: calc(800px * 1.2);
-    height: calc(600px * 1.2);
+    height: 100%; 
+    width:  100%; 
     border-radius: 2px;
     position: relative;
     overflow: hidden;
     outline: 1px solid $border-color ;
-    min-width: 1200px;
 
     background-color: white;
 }
@@ -229,6 +245,83 @@ body {
         cursor: pointer;
     }
 }
+
 .selected-tab {
     border: 1px solid $accent-color !important;
+}
+
+#top-container {
+    width: 100%;
+    display: flex;
+}
+
+#preview-btn {
+    width: 64px;
+    background-color: white;
+    float: right;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid $border-color;
+
+    img {
+        width: 28px;
+
+    }
+
+    &:hover {
+        img {
+            filter: invert(26%) sepia(99%) saturate(3213%) hue-rotate(229deg) brightness(101%) contrast(93%);
+        }
+    }
+
+    &:active {
+        img {
+            width: 24px;
+        }
+    }
+}
+
+img {
+
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
+
+}
+
+#preview-area {
+    position: relative;
+    top: 0;
+    left: 0;
+    background-color: white;
+    aspect-ratio: 4 / 3;
+    height: 90%;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    overflow: hidden;
+
+
+    #preview-cancel {
+        position: absolute;
+        top:   20px;
+        right: 20px;
+
+        z-index: 1000;
+        cursor: pointer;
+        img {
+            width: 16px;
+        }
+
+        &:hover {
+            img {
+                filter: invert(26%) sepia(99%) saturate(3213%) hue-rotate(229deg) brightness(101%) contrast(93%);
+            }
+        }
+
+    }
 }

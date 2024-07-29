@@ -4,28 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style/main.css">
-    <title>PPKO</title>
+    <title>Pkoff</title>
 </head>
 
 <body>
-    <section id="tools-bar">
-        <div id="logo"><h2 >P</h2>koff</div>
-        <section class="tools"> 
-            <img class="tool-btn" src="assets/text.png" alt="text.png" onclick="$.toolManager.setTool(ToolType.Text)">
-        </section>
-
-    </section>
-    <section id="slider-canvas">
-        <div id="config-bar"></div>
-        <div id="canvas-container">
-        </div>
-        <div id="tabs">
-            <section id="tabs-container">
-
+    <section class="area" id="edit-area">
+        <section id="tools-bar">
+            <div id="logo"><h2 >P</h2>koff</div>
+            <section class="tools"> 
+                <img class="tool-btn" src="assets/text.png" alt="text.png" onclick="$.toolManager.setTool(ToolType.Text)">
             </section>
-            <div class="tab add-tab" onclick="$.addCanvas()"> <img src="assets/plus.png"  alt="" ></div>
+    
+        </section>
+        <section id="slider-canvas">
+            <div id="top-container">
+                <div id="config-bar">
+                </div>
+                <div id="preview-btn">
+                    <img src="assets/play.png" alt="play">
+                </div>
+            </div>
+            <div id="canvas-container">
+            </div>
+            <div id="tabs">
+                <section id="tabs-container">
+    
+                </section>
+                <div class="tab add-tab" onclick="$.addCanvas()"> <img src="assets/plus.png"  alt="" ></div>
+            </div>
+        </section>
+    </section>
+    <section class="area" id="preview-area" style="display: none;">
+        <div id="preview-cancel" >
+            <img src="assets/close.png" alt="cancel">
         </div>
     </section>
+
+
 </body>
 <script src="libs/html2canvas.min.js"></script>
 <script src="src/globals.js"></script>

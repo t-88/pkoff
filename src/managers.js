@@ -10,7 +10,7 @@ class DragManager {
             if (this.element == undefined) return;
             if (this.canvasElement == undefined) return;
             if (e.which == 0) {
-            $.onUpdateCanvas();
+                $.onUpdateCanvas();
                 this.element = undefined;
                 return;
             }
@@ -74,7 +74,107 @@ class ImgPasteManager {
         let data = fr.result;
         let pos = $.canvas.relativePos($.mousePos.x, $.mousePos.y);
         $.canvas.addElement(new ImageElement(pos.x, pos.y, data));
+        console.log("asdasd");
     }
 
 }
 
+
+
+class PreviewManager {
+    constructor() {
+        this.previewElem = undefined;
+        this.editElem = undefined;
+
+
+        this.previewBtnElem = undefined;
+        this.previewCancelElem = undefined;
+        this.previewCancelElemClone = undefined;
+
+
+        this.canvas = undefined;
+        this.shown = false;
+    }
+
+    init() {
+        this.previewElem = document.getElementById("preview-area");
+        this.previewElem.style.display = "none";
+
+        this.editElem = document.getElementById("edit-area");
+        document.addEventListener("keydown", (e) => this.onKeyDown(e));
+
+
+        this.previewCancelElem = document.getElementById("preview-cancel");
+        this.previewCancelElemClone = this.previewCancelElem.cloneNode(true);
+        this.previewCancelElemClone.onclick = () => { this.toggleShown(false); }
+
+
+        this.previewBtnElem = document.getElementById("preview-btn");
+        this.previewBtnElem.onclick = () => this.preview();
+    }
+
+
+
+    onKeyDown(e) {
+        if (!this.shown) return;
+        if (e.key == "Escape") {
+            toggleShown(false);
+        }
+    }
+
+    toggleShown(force) {
+        if(force != undefined) {
+            this.shown = !force;
+        }
+        if (!this.shown) {
+            this.editElem.style.display = "none";
+            this.previewElem.style.display = "";
+        } else if (this.shown) {
+            this.editElem.style.display = "";
+            this.previewElem.style.display = "none";
+        }
+        this.shown = !this.shown;
+
+    }
+
+    createElem(elem) {
+        let shown = this.shown;
+            this.toggleShown(false);
+            let rect = this.canvas.getRect();
+            let elemPos = elem.getScreenPosition();
+            this.toggleShown(true);
+            let curWidth = this.previewElem.getBoundingClientRect().width;
+        this.toggleShown(shown);
+
+        let scale = curWidth / rect.w;
+        let relativePosition = { x: (elemPos.x - rect.x) / rect.w * 100, y: (elemPos.y - rect.y) / rect.h * 100 };
+
+
+        let htmlElem = elem.element.cloneNode(true);
+        htmlElem.style.position = "absolute";
+        htmlElem.style.left = `${relativePosition.x}%`;
+        htmlElem.style.top = `${relativePosition.y }%`;
+        htmlElem.style.scale = `${scale}`;
+
+
+
+        return htmlElem;
+    }
+    preview() {
+        this.shown = true;
+
+        this.canvas = $.canvas;
+        clearElemNodes(this.previewElem);
+        this.previewElem.appendChild(this.previewCancelElemClone);
+
+
+
+        for (let elem of this.canvas.elements) {
+            let htmlElem = this.createElem(elem);
+            this.previewElem.appendChild(htmlElem);
+        }
+
+        this.toggleShown(true);
+
+    }
+}

@@ -13,7 +13,18 @@ body {
 
 body {
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.area {
+  display: flex;
   flex-direction: row;
+}
+
+#edit-area {
+  width: 100%;
+  height: 100%;
 }
 
 #tools-bar {
@@ -71,10 +82,11 @@ body {
   gap: 16px;
   justify-content: space-between;
   background-color: whitesmoke;
+  overflow: hidden;
 }
 #slider-canvas #config-bar {
-  width: 100%;
   height: 60px;
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 32px;
@@ -116,15 +128,22 @@ body {
   margin-right: 32px;
 }
 
+#canvas-container {
+  aspect-ratio: 4/3;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .canvas {
   display: block;
-  width: 960px;
-  height: 720px;
+  height: 100%;
+  width: 100%;
   border-radius: 2px;
   position: relative;
   overflow: hidden;
   outline: 1px solid #dbe2ea;
-  min-width: 1200px;
   background-color: white;
 }
 
@@ -190,6 +209,65 @@ body {
 
 .selected-tab {
   border: 1px solid #3f59f6 !important;
+}
+
+#top-container {
+  width: 100%;
+  display: flex;
+}
+
+#preview-btn {
+  width: 64px;
+  background-color: white;
+  float: right;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe2ea;
+}
+#preview-btn img {
+  width: 28px;
+}
+#preview-btn:hover img {
+  filter: invert(26%) sepia(99%) saturate(3213%) hue-rotate(229deg) brightness(101%) contrast(93%);
+}
+#preview-btn:active img {
+  width: 24px;
+}
+
+img {
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+}
+
+#preview-area {
+  position: relative;
+  top: 0;
+  left: 0;
+  background-color: white;
+  aspect-ratio: 4/3;
+  height: 90%;
+  border: 1px solid #dbe2ea;
+  border-radius: 4px;
+  overflow: hidden;
+}
+#preview-area #preview-cancel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  cursor: pointer;
+}
+#preview-area #preview-cancel img {
+  width: 16px;
+}
+#preview-area #preview-cancel:hover img {
+  filter: invert(26%) sepia(99%) saturate(3213%) hue-rotate(229deg) brightness(101%) contrast(93%);
 }
 
 /*# sourceMappingURL=main.css.map */

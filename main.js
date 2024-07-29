@@ -19,6 +19,7 @@ class AppState {
         this.toolManager = new ToolManager();
         this.dragManager = new DragManager();
         this.imgPasteManager = new ImgPasteManager();
+        this.previewManager = new PreviewManager();
 
         // ui
         this.canvasContainerElem = undefined;
@@ -45,6 +46,7 @@ class AppState {
     onLoad() {
         this.configBar.init();
         this.dragManager.init();
+        this.previewManager.init();
         
         this.canvasContainerElem = document.getElementById("canvas-container");
         this.tabsElem = document.getElementById("tabs-container");
@@ -89,8 +91,12 @@ class AppState {
     }
 
 
+
 }
 
 var $ = new AppState();
 
 
+// preview slides
+// generate code
+// render pages

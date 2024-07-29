@@ -1,25 +1,46 @@
+const CanvasElem = Object.freeze({
+    Elem: "Elem",
+    TextElem: "TextElem",
+    ImageElem: "ImageElem",
+});
 
-class TextElement {
+
+class Element {
     constructor(x, y) {
+        this.element = undefined;
+        this.type = CanvasElem.Elem;
+    }
+
+    onClick(e) { }
+    onMouseDown(e) { }
+    config() { }
+
+
+    getScreenPosition() {
+        let rect = this.element.getBoundingClientRect();
+        return {x: rect.x , y: rect.y};
+    }
+}
+
+class TextElement extends Element {
+    constructor(x, y) {
+        super(x, y);
+
         this.element = parseHTML(`<div  class="text-element" 
                                         contenteditable="true"
                                         style="position: absolute;top: ${y}%;left: ${x}%;">
-                                        <span>_#####################</span>
+                                        <span></span>
                                   </div>`);
-
-
         this.element.addEventListener("mousedown", (e) => this.onMouseDown(e));
+        this.element.addEventListener("click", (e) => this.onClick(e));
         this.element.addEventListener("mouseup", (e) => this.onMouseUp(e));
         this.element.addEventListener("focusout", (e) => this.onFocusOut(e));
         this.element.addEventListener("dblclick", (e) => this.onDoubleClick(e));
-        this.element.addEventListener("click", (e) => this.onClick(e));
+        this.type = CanvasElem.TextElem;
     }
 
 
-    onMouseDown(e) {
-        if (!this.element.classList.contains("text-element-unfoced")) return;
-        $.dragManager.element = this.element;
-    }
+
     onMouseUp(e) {
         e.stopPropagation();
         if (getSelectedTextEvent()[0].length == 0) {
@@ -67,12 +88,11 @@ class TextElement {
         this.element.classList.remove("text-element-unfoced");
         this.element.focus();
     }
-    onClick(e) {
-        e.stopPropagation();
-        this.config();
+
+    onMouseDown(e) {
+        if (!this.element.classList.contains("text-element-unfoced")) return;
+        $.dragManager.element = this.element;
     }
-
-
 
     onSelectionResize(e) {
         // no text selected to resize
@@ -198,7 +218,14 @@ class TextElement {
         this.element.style.width = `${parseInt(e.target.value)}px`;
         $.onUpdateCanvas();
     }
+    onClick(e) {
+        e.stopPropagation();
+        this.config();
+    }
+
     config() {
+
+
         $.configOptions[ConfigsType.TextResize].config(this.element, getFontSize(this.element), (e) => this.onSelectionResize(e));
         $.configOptions[ConfigsType.WidthResize].config(this.element, parseInt(this.element.getBoundingClientRect().width), (e) => this.onWidthResize(e));
         $.configBar.setConfigList([ConfigsType.TextResize, ConfigsType.WidthResize]);
@@ -206,8 +233,9 @@ class TextElement {
     }
 }
 
-class ImageElement {
+class ImageElement extends Element {
     constructor(x, y, data) {
+        super(x, y);
         this.data = data;
         this.element = parseHTML(`<img class="image-element" 
                                        src="${data}"
@@ -217,12 +245,17 @@ class ImageElement {
                                             left: ${x}px;
                                    "/>`);
 
+        this.element.addEventListener("mousedown", (e) => this.onMouseDown(e));
+        this.element.addEventListener("click", (e) => this.onClick(e));
+
+        this.loaded = false;
         this.widthResizeEnabled = true;
         this.heightResizeEnabled = false;
         this.inputWidth = parseInt(this.element.getBoundingClientRect().width);
         this.inputHeight = parseInt(this.element.getBoundingClientRect().height);
-        this.element.addEventListener("mousedown", (e) => this.onMouseDown(e));
-        this.element.addEventListener("click", (e) => this.onClick(e));
+        this.type = CanvasElem.ImageElem;
+
+
     }
     onMouseDown(e) {
         e.preventDefault();
@@ -232,6 +265,7 @@ class ImageElement {
         e.stopPropagation();
         this.config();
     }
+
 
     onWidthResize(e) {
         this.inputWidth = `${parseInt(e.target.value)}px`;
@@ -264,21 +298,34 @@ class ImageElement {
 
     }
 
+
+
     config() {
-        this.inputWidth = parseInt(this.element.getBoundingClientRect().width);
-        this.inputHeight = parseInt(this.element.getBoundingClientRect().height);
-        if (this.heightResizeEnabled) {
-            this.element.style.height = `${parseInt(this.inputHeight)}px`;
-        }
-        if (this.widthResizeEnabled) {
-            this.element.style.width = `${parseInt(this.inputWidth)}px`;
-        }
+        let self = this;
+        function callback() {
+            self.loaded = true;
+            self.inputWidth = parseInt(self.element.getBoundingClientRect().width);
+            self.inputHeight = parseInt(self.element.getBoundingClientRect().height);
+            if (self.heightResizeEnabled) {
+                self.element.style.height = `${parseInt(self.inputHeight)}px`;
+            }
+            if (self.widthResizeEnabled) {
+                self.element.style.width = `${parseInt(self.inputWidth)}px`;
+            }
 
 
-        $.configOptions[ConfigsType.WidthResize].config(this.element, this.inputWidth, (e) => this.onWidthResize(e), false, true, (e) => this.disableWidthResize(e));
-        $.configOptions[ConfigsType.HeightResize].config(this.element, this.inputHeight, (e) => this.onHeightResize(e), false, false, (e) => this.disableHeightResize(e));
-        $.configBar.setConfigList([ConfigsType.WidthResize, ConfigsType.HeightResize]);
-        $.onUpdateCanvas();
+            $.configOptions[ConfigsType.WidthResize].config(self.element, self.inputWidth, (e) => self.onWidthResize(e), false, true, (e) => self.disableWidthResize(e));
+            $.configOptions[ConfigsType.HeightResize].config(self.element, self.inputHeight, (e) => self.onHeightResize(e), false, false, (e) => self.disableHeightResize(e));
+            $.configBar.setConfigList([ConfigsType.WidthResize, ConfigsType.HeightResize]);
+            $.onUpdateCanvas();
+        }
+
+        if (!this.loaded) {
+            this.element.addEventListener("load", () => { callback(); }, { once: true });
+        } else {
+            callback();
+        }
+
     }
 }
 
